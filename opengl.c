@@ -1,5 +1,9 @@
+#define _POSIX_C_SOURCE 199309L
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <assert.h>
 
 /* OpenGL 1.1 spec <https://registry.khronos.org/OpenGL/specs/gl/glspec11.pdf> */
 #include <GL/gl.h>
@@ -42,6 +46,9 @@ unsigned long ec = 0;
 /* Creating a window X11 <https://hereket.com/posts/linux_creating_x11_windows> */
 int main(void) {
 	int is_window_alive = 1;
+
+	struct timespec now, old;
+	time_t dt;
 
 	struct {
 		GLfloat x, y;
@@ -91,9 +98,17 @@ int main(void) {
 	glEnable(GL_DEPTH_TEST);
 	PRINT_GL_ERRORS();
 
+	assert(clock_gettime(CLOCK_MONOTONIC, &old) == 0);
 	while(is_window_alive) {
 		XEvent event;
 		XNextEvent(display, &event);
+
+		assert(clock_gettime(CLOCK_MONOTONIC, &now) == 0);
+		dt = now.tv_nsec - old.tv_nsec;
+		old = now;
+
+#define DTtoHZ(DT) (1/((double)(DT)/1e9))
+		printf("DeltaTime %lu - HZ %f\n", dt, DTtoHZ(dt));
 
 		switch(event.type) {
 			case Expose:
@@ -133,6 +148,7 @@ int main(void) {
 			}
 		}
 
+
 		glClearColor(0.094f, 0.094f, 0.094f, 1.0);
 		PRINT_GL_ERRORS();
 
@@ -157,10 +173,11 @@ int main(void) {
 		glEnd();
 		PRINT_GL_ERRORS();
 
-		/* printf("MOUSE %.2fx%.2f\n", cursor_pos.x, cursor_pos.y); */
+		printf("MOUSE %.2fx%.2f\n", cursor_pos.x, cursor_pos.y);
 
 		glXSwapBuffers(display, window);
 		PRINT_GL_ERRORS();
+
 		XFlush(display);
 	}
 

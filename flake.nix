@@ -11,7 +11,7 @@
 		forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
 		allpkgs = forAllSystems (system: import nixpkgs { inherit system; });
 
-		runPkgs = pkgs: with pkgs; [ libGL libGL.dev libglvnd libglvnd.dev mesa.drivers ];
+		runPkgs = pkgs: with pkgs; [ libGL libGL.dev libglvnd libglvnd.dev mesa.drivers glfw ];
 		buildPkgs = pkgs: with pkgs; [ gcc gnumake ];
 	in
 	{

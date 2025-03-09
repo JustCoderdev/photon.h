@@ -9,7 +9,7 @@ CCFLAGS = -xc -std=c89 -ansi -pedantic-errors -pedantic \
 		 -Wmissing-prototypes -Wconversion -g
 
 IFLAGS = -I./ -I./lib/include -I../include
-LDFLAGS = -L./ -lGL -lX11
+LDFLAGS = -L./ -lGL -lX11 -lrt
 
 DFLAGS = -DDEBUG_ENABLE=1
 FLAGS = $(CCFLAGS) $(IFLAGS) $(LDFLAGS) $(DFLAGS)
