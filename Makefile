@@ -1,14 +1,17 @@
 # JustCoderdev Makefile for C projects v6
 
 CORE_FILES =
+PHOTON_FILES = lib/photon/utils.c
+LIB_HEADERS  = lib/include/photon.h
 
 CC = gcc
 CCFLAGS = -xc -std=c89 -ansi -pedantic-errors -pedantic \
 		 -Wall -Wextra -Werror -Wshadow -Wpointer-arith \
 		 -Wcast-qual -Wcast-align -Wstrict-prototypes \
-		 -Wmissing-prototypes -Wconversion -g
+		 -Wmissing-prototypes -Wconversion -g \
+		 -Wno-unused-variable
 
-IFLAGS = -I./ -I./lib/include -I../include
+IFLAGS = -I./ -I./lib/include
 LDFLAGS = -L./ -lGL -lglfw -lm
 
 DFLAGS = -DDEBUG_ENABLE=1
@@ -19,11 +22,14 @@ FLAGS = $(CCFLAGS) $(IFLAGS) $(LDFLAGS) $(DFLAGS)
 .PHONY: clean
 
 all:
-all-tests: bin/open
 
-bin/opengl-test: bin opengl.c
-	@echo "Compiling... (opengl-test)"
-	$(CC) $(FLAGS) opengl.c -o bin/opengl-test
+bin/engine: bin engine.c $(PHOTON_FILES) $(LIB_HEADERS)
+	@echo "Compiling... (engine)"
+	$(CC) $(FLAGS) engine.c $(PHOTON_FILES) -o bin/engine
+
+bin/gas: bin gas.c $(PHOTON_FILES) $(LIB_HEADERS)
+	@echo "Compiling... (gas)"
+	$(CC) $(FLAGS) gas.c -o bin/gas
 
 bin:
 	@mkdir -p bin

@@ -68,7 +68,7 @@
 
 					shellHook = ''
 						LD_LIBRARY_PATH="/run/opengl-driver/lib:/run/opengl-driver-32/lib";
-						PROMPT=$'%F{8} %~ %B%F{6}$%f%b ' zsh && exit
+						zsh && exit
 					'';
 				}
 			);
