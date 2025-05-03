@@ -63,7 +63,8 @@ typedef struct {
 /* 0..1 -> -1..1 */
 #define RAT_TO_RAD(RAT) ((float)(((RAT) - 0.5f ) * 2))
 
-#define CLAMP_RAD(RAD) ((RAD) > 1 ? 1 : ((RAD) < -1 ? -1 : (RAD)))
+#define CLAMP(MIN, VAL, MAX) ((VAL) > (MAX) ? (MAX) : ((VAL) < (MIN) ? (MIN) : (VAL)))
+#define CLAMP_RAD(RAD) CLAMP(-1, (RAD), 1)
 
 #define GL_LOG_ERRORS() glLogErrors(__FILE__, __LINE__)
 

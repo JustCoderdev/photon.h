@@ -25,6 +25,7 @@ static void draw_gay_circle(float x, float y, int steps, float aspect_ratio, flo
 
 int main(void)
 {
+	ColorRGB RED = { 255, 0, 0 };
 	Point cursor_pos = {0};
 
 	float aspect_ratio;
@@ -35,6 +36,10 @@ int main(void)
 		display_free();
 		return failure;
 	}
+
+	/* ---- REMOVE ME ----- */
+	(void)draw_gay_circle(0, 0, 0, 0, 0);
+	/* ---- REMOVE ME ----- */
 
 	aspect_ratio = (float)viewport.width / (float)viewport.height;
 	printf("Viewport %dx%d (%.2f)\n", viewport.width, viewport.height, aspect_ratio);
@@ -52,6 +57,77 @@ int main(void)
 
 		/* -------------------- */
 
+#define P0_C  0.37f, 0.37f, 0.37f
+#define P1F_C 0.75f, 0.47f, 0.63f
+#define P1M_C 0.42f, 0.50f, 0.82f
+#define P2_C  1.00f, 0.96f, 0.59f
+
+#define P0  -0.5f, -0.5f * aspect_ratio
+#define P1F -0.5f,  0.5f * aspect_ratio
+#define P1M  0.5f, -0.5f * aspect_ratio
+#define P2   0.5f,  0.5f * aspect_ratio
+
+		glBegin(GL_TRIANGLES);
+			glColor3f(P0_C);  glVertex2f(P0);
+			glColor3f(P1F_C); glVertex2f(P1F);
+			glColor3f(P2_C);  glVertex2f(P2);
+
+			glColor3f(P0_C);  glVertex2f(P0);
+			glColor3f(P1M_C); glVertex2f(P1M);
+			glColor3f(P2_C);  glVertex2f(P2);
+		glEnd();
+		GL_LOG_ERRORS();
+
+		{
+			n8 i;
+			n8 steps = 10;
+			float size = 1.0f;
+
+			float bx = -0.5f;
+			float by = -0.5f;
+
+			glBegin(GL_TRIANGLE_FAN);
+				glColor3f(0.194f, 0.094f, 0.094f);
+				glVertex2f(P2);
+
+
+				/* glVertex2f((-0.5f / aspect_ratio), 0.5f); */
+				/* glVertex2f((-0.3f / aspect_ratio), 0.4f); */
+				/* /1* ... *1/ */
+				/* glVertex2f(( 0.4f / aspect_ratio), -0.3f); */
+				/* glVertex2f(( 0.5f / aspect_ratio), -0.5f); */
+
+				for(i = 0; i <= steps; ++i)
+				{
+					double deg = ((float)i / (float)steps) * PI / 2;
+					glVertex2f(
+						 bx + (float)cos(deg) * size,
+						(by + (float)sin(deg) * size) * aspect_ratio
+					);
+				}
+			glEnd();
+			GL_LOG_ERRORS();
+
+			glPointSize(10.0f);
+			GL_LOG_ERRORS();
+
+			glBegin(GL_POINTS);
+				glColor3f(1.0f, 0.0f, 0.0f); glVertex2f(P2);
+				glColor3f(0.0f, 1.0f, 0.0f);
+				for(i = 0; i <= steps; ++i)
+				{
+					double deg = ((float)i / (float)steps) * PI / 2;
+					glVertex2f(
+						 bx + (float)cos(deg) * size,
+						(by + (float)sin(deg) * size) * aspect_ratio
+					);
+				}
+			glEnd();
+			GL_LOG_ERRORS();
+		}
+
+
+		/* Rainbow Triangle */
 		/* glBegin(GL_TRIANGLES); */
 		/* 	glColor3f(1.0f, 0.0f, 0.0f); glVertex3f(  0.0f,  0.5f, 0.0f); */
 		/* 	glColor3f(0.0f, 1.0f, 0.0f); glVertex3f( -0.5f, -0.5f, 0.0f); */
@@ -59,22 +135,22 @@ int main(void)
 		/* glEnd(); */
 		/* GL_LOG_ERRORS(); */
 
-		glPointSize(10.0f);
-		GL_LOG_ERRORS();
+		/* glPointSize(10.0f); */
+		/* GL_LOG_ERRORS(); */
 
-		glBegin(GL_POINTS);
-			glColor3f(1.0f, 0.0f, 0.0f);
-			glVertex3f(cursor_pos.x, cursor_pos.y, 0.0f);
-		glEnd();
-		GL_LOG_ERRORS();
+		/* glBegin(GL_POINTS); */
+		/* 	glColor3f(1.0f, 0.0f, 0.0f); */
+		/* 	glVertex3f(cursor_pos.x, cursor_pos.y, 0.0f); */
+		/* glEnd(); */
+		/* GL_LOG_ERRORS(); */
 
-		{
-			float size = 0.2f;
-			float x = cursor_pos.x,
-				  y = cursor_pos.y;
+		/* { */
+		/* 	float size = 0.2f; */
+		/* 	float x = CLAMP(-1 + size, cursor_pos.x, 1 - size), */
+		/* 		  y = CLAMP(-1 + size * aspect_ratio, cursor_pos.y, 1 - size * aspect_ratio); */
 
-			draw_gay_circle(x, y, 16, aspect_ratio, size);
-		}
+		/* 	draw_gay_circle(x, y, 16, aspect_ratio, size); */
+		/* } */
 
 		/* -------------------- */
 		display_refresh();
@@ -86,25 +162,3 @@ int main(void)
 	display_free();
 	return success;
 }
-
-
-
-
-#if 0 /* <3 */
-float size = 0.2f;
-float x = 0.0f,
-	  y = 0.0f;
-float xoff = 0.15f,
-	  yoff = 0.5f;
-float r = 1.00f,
-	  g = 0.0f,
-	  b = 0.0f;
-/* glBegin(GL_TRIANGLES); */
-/* 	glColor3f(r, g, b); glVertex3f(x - xoff - size, y + yoff - 0.1f, 0.0f); */
-/* 	glColor3f(r, g, b); glVertex3f(x + xoff + size, y + yoff - 0.1f, 0.0f); */
-/* 	glColor3f(r, g, b); glVertex3f(0.0f, -0.3f, 0.0f); */
-/* glEnd(); */
-
-/* draw_flat_circle(x - xoff, y + yoff, 16, aspect_ratio, size, r, g, b); */
-/* draw_flat_circle(x + xoff, y + yoff, 16, aspect_ratio, size, r, g, b); */
-#endif
