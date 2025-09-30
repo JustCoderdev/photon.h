@@ -27,12 +27,12 @@ typedef signed long int i64;
 typedef enum {
 	true  = (1 == 1),
 	false = (1 != 1)
-} bool;
+} Bool;
 
 typedef enum {
 	success = false,
 	failure = true
-} error;
+} Error;
 
 typedef int Errno;
 
@@ -73,6 +73,7 @@ typedef struct {
 /* ------------------------------------------------------------ */
 
 extern void draw_circle_flat(Point pos, float size, Ratio aspect_ratio, n8 steps, ColorRGB color);
+extern void draw_triangles(Point pos, float size, Ratio aspect_ratio, n8 steps, ColorRGB color);
 
 
 /* Display */
@@ -80,13 +81,13 @@ extern void draw_circle_flat(Point pos, float size, Ratio aspect_ratio, n8 steps
 
 extern GLFWwindow *g_window;
 extern Size g_viewport;
-extern bool g_display_is_alive;
+extern Bool g_display_is_alive;
 
-extern error display_init(Size* viewport);
+extern Error display_init(Size* viewport);
 extern void  display_refresh(void);
 extern void  display_free(void);
 
-extern bool  display_is_alive(void);
+extern Bool  display_is_alive(void);
 
 
 /* Input */
@@ -101,7 +102,7 @@ extern void inputs_get_cursor(Point* cursor_pos);
 /* Utils */
 /* ------------------------------------------------------------ */
 
-extern error glLogErrors(char* file, int line);
+extern Error glLogErrors(char* file, int line);
 
 
 #endif /* PHOTON_H */

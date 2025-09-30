@@ -26,14 +26,14 @@ void draw_circle_flat(Point pos, float size, Ratio aspect_ratio, n8 steps, Color
 
 GLFWwindow *g_window = NULL;
 Size g_viewport = {0};
-bool g_display_is_alive = false;
+Bool g_display_is_alive = false;
 
 
-error display_init(Size* viewport)
+Error display_init(Size* viewport)
 {
 	extern GLFWwindow* g_window;
 	extern Size g_viewport;
-	extern bool g_display_is_alive;
+	extern Bool g_display_is_alive;
 
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
@@ -70,10 +70,10 @@ void display_free(void)
 	glfwTerminate();
 }
 
-bool display_is_alive(void)
+Bool display_is_alive(void)
 {
 	extern GLFWwindow* g_window;
-	extern bool g_display_is_alive;
+	extern Bool g_display_is_alive;
 
 	g_display_is_alive = !glfwWindowShouldClose(g_window);
 	return g_display_is_alive;
@@ -122,7 +122,7 @@ void inputs_get_cursor(Point* cursor_pos)
 /* Utils */
 /* ------------------------------------------------------------ */
 
-error glLogErrors(char* file, int line)
+Error glLogErrors(char* file, int line)
 {
 	static unsigned long ec = 0;
 
