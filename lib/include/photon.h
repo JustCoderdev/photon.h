@@ -97,6 +97,23 @@ extern void inputs_poll(void);
 extern void inputs_get_cursor(Point* cursor_pos);
 
 
+/* Runner API */
+/* ------------------------------------------------------------ */
+
+/*
+#ifndef RUNNER_INTERNAL
+typedef void Runner_State;
+#endif *//* RUNNER_INTERNAL */
+
+typedef struct {
+	Size viewport;
+	float aspect_ratio;
+	Point cursor_pos;
+} Runner_State;
+
+extern Runner_State* runner_init(Size viewport, float aspect_ratio);
+extern Bool          runner_loop(Runner_State* state); /* float delta_time */
+extern void          runner_deinit(Runner_State* state);
 
 
 /* Utils */

@@ -12,7 +12,7 @@ CCFLAGS = -xc -std=c89 -ansi -pedantic-errors -pedantic \
 		 -Wno-unused-variable
 
 IFLAGS = -I./ -I./lib/include
-LDFLAGS = -L./ -lGL -lglfw -lm
+LDFLAGS = -L./ -L./bin -lGL -lglfw -lm -Wl,-rpath=./bin
 
 DFLAGS = -DDEBUG_ENABLE=1
 FLAGS = $(CCFLAGS) $(IFLAGS) $(LDFLAGS) $(DFLAGS)
@@ -21,15 +21,15 @@ FLAGS = $(CCFLAGS) $(IFLAGS) $(LDFLAGS) $(DFLAGS)
 .PHONY: bin
 .PHONY: clean
 
-all:
+all: bin/gas.so bin/engine
 
 bin/engine: bin engine.c $(PHOTON_FILES) $(LIB_HEADERS)
 	@echo "Compiling... (engine)"
-	$(CC) $(FLAGS) engine.c $(PHOTON_FILES) -o bin/engine
+	$(CC) $(FLAGS) engine.c -l:gas.so $(PHOTON_FILES) -o $@
 
-bin/gas: bin gas.c $(PHOTON_FILES) $(LIB_HEADERS)
+bin/gas.so: bin gas.c $(PHOTON_FILES) $(LIB_HEADERS)
 	@echo "Compiling... (gas)"
-	$(CC) $(FLAGS) gas.c -o bin/gas
+	$(CC) $(FLAGS) -fPIC -shared gas.c -o $@
 
 bin:
 	@mkdir -p bin
