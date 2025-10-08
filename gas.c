@@ -22,13 +22,12 @@ static void draw_gay_circle(float x, float y, n8 steps, float aspect_ratio, floa
 	GL_LOG_ERRORS();
 }
 
-Runner_State* runner_init(Size viewport, float aspect_ratio)
+Runner_State* runner_init(Window_State* window_state)
 {
 	Runner_State* state = malloc(sizeof(*state));
 	(void)memset(state, 0, sizeof(*state));
 
-	state->viewport = viewport;
-	state->aspect_ratio = aspect_ratio;
+	state->window_state = window_state;
 
 	/* ---- REMOVE ME ----- */
 	/* float x, float y, int steps, float aspect_ratio, float size */
@@ -40,9 +39,12 @@ Runner_State* runner_init(Size viewport, float aspect_ratio)
 
 Bool runner_loop(Runner_State* state)
 {
-	Size viewport = state->viewport;
-	float aspect_ratio = state->aspect_ratio;
-	Point cursor_pos = state->cursor_pos;
+	Size viewport = state->window_state->viewport;
+	float aspect_ratio = (float)state->window_state->viewport.width / (float)state->window_state->viewport.height;
+
+	Point cursor_pos;
+	inputs_get_cursor(state->window_state, &state->cursor_pos);
+	cursor_pos = state->cursor_pos;
 
 	/* -------------------- */
 
@@ -159,10 +161,6 @@ Bool runner_loop(Runner_State* state)
 
 	/* -------------------- */
 
-	display_refresh();
-
-	inputs_poll();
-	inputs_get_cursor(&state->cursor_pos);
 	return false;
 }
 

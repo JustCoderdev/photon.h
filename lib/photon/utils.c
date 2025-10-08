@@ -38,17 +38,8 @@ void draw_circle_flat(Point pos, float size, Ratio aspect_ratio, n8 steps, Color
 /* Display */
 /* ------------------------------------------------------------ */
 
-GLFWwindow *g_window = NULL;
-Size g_viewport = {0};
-Bool g_display_is_alive = false;
-
-
-Error display_init(Size* viewport)
+Error display_init(Window_State* state, n16 viewport_width, n16 viewport_height)
 {
-	extern GLFWwindow* g_window;
-	extern Size g_viewport;
-	extern Bool g_display_is_alive;
-
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -57,26 +48,22 @@ Error display_init(Size* viewport)
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	glfwWindowHint(GLFW_FLOATING, GLFW_TRUE);
 
-	g_window = glfwCreateWindow(viewport->width, viewport->height, "Emulator", NULL, NULL);
-	if(g_window == NULL) return failure;
+	state->window = glfwCreateWindow(viewport_width, viewport_height, "Emulator", NULL, NULL);
+	if(state->window == NULL) return failure;
 
-	glfwMakeContextCurrent(g_window);
+	glfwMakeContextCurrent(state->window);
 	printf("OpenGL Version %s\n", glGetString(GL_VERSION));
 
-	glfwGetFramebufferSize(g_window, &g_viewport.width, &g_viewport.height);
-
-	viewport->width = g_viewport.width;
-	viewport->height = g_viewport.height;
-
-	g_display_is_alive = true;
+	glfwGetFramebufferSize(state->window, &state->viewport.width, &state->viewport.height);
+	state->display_is_alive = true;
 
 	return success;
 }
 
-void display_refresh(void)
+void display_refresh(Window_State* state)
 {
-	extern GLFWwindow* g_window;
-	glfwSwapBuffers(g_window);
+	assert(state->window != NULL);
+	glfwSwapBuffers(state->window);
 }
 
 void display_free(void)
@@ -84,43 +71,41 @@ void display_free(void)
 	glfwTerminate();
 }
 
-Bool display_is_alive(void)
+Bool display_is_alive(Window_State* state)
 {
-	extern GLFWwindow* g_window;
-	extern Bool g_display_is_alive;
-
-	g_display_is_alive = !glfwWindowShouldClose(g_window);
-	return g_display_is_alive;
+	state->display_is_alive = !glfwWindowShouldClose(state->window);
+	return state->display_is_alive;
 }
 
 /* Input */
 /* ------------------------------------------------------------ */
 
-extern void inputs_poll(void)
+extern void inputs_poll(Window_State* state)
 {
-	extern GLFWwindow* g_window;
-
 	glfwPollEvents();
 
 	/* Check if should close window */
-	if(glfwGetKey(g_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	if(glfwGetKey(state->window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
-		glfwSetWindowShouldClose(g_window, true);
+		glfwSetWindowShouldClose(state->window, true);
+		state->display_is_alive = false;
+	}
+
+	if(glfwGetKey(state->window, GLFW_KEY_R) == GLFW_PRESS)
+	{
+		state->runner_should_reload = true;
 	}
 }
 
-void inputs_get_cursor(Point* cursor_pos)
+void inputs_get_cursor(Window_State* window_state, Point* cursor_pos)
 {
-	extern GLFWwindow* g_window;
-	extern Size g_viewport;
-
 	double cx, cy; /* cursor xy */
 	float  rx, ry; /* rad xy */
 
-	int vw = g_viewport.width,
-		vh = g_viewport.height;
+	int vw = window_state->viewport.width,
+		vh = window_state->viewport.height;
 
-	glfwGetCursorPos(g_window, &cx, &cy);
+	glfwGetCursorPos(window_state->window, &cx, &cy);
 
 	rx = CLAMP_RAD( RAT_TO_RAD(cx / vw));
 	ry = CLAMP_RAD(-RAT_TO_RAD(cy / vh));

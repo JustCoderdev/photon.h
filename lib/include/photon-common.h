@@ -1,6 +1,10 @@
 #ifndef PHOTON_COMMON_H
 #define PHOTON_COMMON_H
 
+/* OpenGL 1.1 spec <https://registry.khronos.org/OpenGL/specs/gl/glspec11.pdf> */
+#include <GL/gl.h>
+#include <GLFW/glfw3.h>
+
 
 /* Types */
 /* ------------------------------------------------------------ */
@@ -43,6 +47,13 @@ typedef struct {
 	float r, g, b;
 } ColorRGB;
 
+
+typedef struct {
+	GLFWwindow *window;
+	Bool display_is_alive;
+	Bool runner_should_reload;
+	Size viewport;
+} Window_State;
 
 /* Macros */
 /* ------------------------------------------------------------ */

@@ -6,9 +6,6 @@
 #include <assert.h>
 #include <math.h>
 
-/* OpenGL 1.1 spec <https://registry.khronos.org/OpenGL/specs/gl/glspec11.pdf> */
-#include <GL/gl.h>
-#include <GLFW/glfw3.h>
 
 #include <photon-common.h>
 
@@ -23,22 +20,17 @@ extern void draw_triangles(Point pos, float size, Ratio aspect_ratio, n8 steps, 
 /* Display */
 /* ------------------------------------------------------------ */
 
-extern GLFWwindow *g_window;
-extern Size g_viewport;
-extern Bool g_display_is_alive;
-
-extern Error display_init(Size* viewport);
-extern void  display_refresh(void);
+extern Error display_init(Window_State* state, n16 viewport_width, n16 viewport_height);
+extern Bool  display_is_alive(Window_State* state);
+extern void  display_refresh(Window_State* state);
 extern void  display_free(void);
-
-extern Bool  display_is_alive(void);
 
 
 /* Input */
 /* ------------------------------------------------------------ */
 
-extern void inputs_poll(void);
-extern void inputs_get_cursor(Point* cursor_pos);
+extern void inputs_poll(Window_State* state);
+extern void inputs_get_cursor(Window_State* state, Point* cursor_pos);
 
 
 /* Runner API */
@@ -50,7 +42,7 @@ extern void inputs_get_cursor(Point* cursor_pos);
 typedef void Runner_State;
 #endif /* PHOTON_RUNNER_H */
 
-typedef Runner_State* (*Runner_Init_Func)(Size viewport, float aspect_ratio);
+typedef Runner_State* (*Runner_Init_Func)(Window_State* window_state);
 typedef Bool          (*Runner_Loop_Func)(Runner_State* state); /* float delta_time */
 typedef void          (*Runner_Deinit_Func)(Runner_State* state);
 
