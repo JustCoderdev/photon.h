@@ -10,63 +10,7 @@
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 
-
-/* Types */
-/* ------------------------------------------------------------ */
-
-typedef unsigned char     n8;
-typedef unsigned short    n16;
-typedef unsigned int      n32;
-typedef unsigned long int n64;
-
-typedef signed char     i8;
-typedef signed short    i16;
-typedef signed int      i32;
-typedef signed long int i64;
-
-typedef enum {
-	true  = (1 == 1),
-	false = (1 != 1)
-} Bool;
-
-typedef enum {
-	success = false,
-	failure = true
-} Error;
-
-typedef int Errno;
-
-typedef float Ratio;
-typedef float Radian;
-
-
-typedef struct {
-	float x, y;
-} Point;
-
-typedef struct {
-	int width, height;
-} Size;
-
-typedef struct {
-	float r, g, b;
-} ColorRGB;
-
-
-/* Macros */
-/* ------------------------------------------------------------ */
-
-#define PI 3.1415926535f
-
-/* -1..1 -> 0..1 */
-#define RAD_TO_RAT(RAD) ((float)(((RAD) + 1) / 2))
-/* 0..1 -> -1..1 */
-#define RAT_TO_RAD(RAT) ((float)(((RAT) - 0.5f ) * 2))
-
-#define CLAMP(MIN, VAL, MAX) ((VAL) > (MAX) ? (MAX) : ((VAL) < (MIN) ? (MIN) : (VAL)))
-#define CLAMP_RAD(RAD) CLAMP(-1, (RAD), 1)
-
-#define GL_LOG_ERRORS() glLogErrors(__FILE__, __LINE__)
+#include <photon-common.h>
 
 
 /* Geometry */
@@ -100,26 +44,39 @@ extern void inputs_get_cursor(Point* cursor_pos);
 /* Runner API */
 /* ------------------------------------------------------------ */
 
-/*
-#ifndef RUNNER_INTERNAL
+#define RUNNER_DL_NAME "gas.so"
+
+#ifndef PHOTON_RUNNER_H
 typedef void Runner_State;
-#endif *//* RUNNER_INTERNAL */
+#endif /* PHOTON_RUNNER_H */
+
+typedef Runner_State* (*Runner_Init_Func)(Size viewport, float aspect_ratio);
+typedef Bool          (*Runner_Loop_Func)(Runner_State* state); /* float delta_time */
+typedef void          (*Runner_Deinit_Func)(Runner_State* state);
 
 typedef struct {
-	Size viewport;
-	float aspect_ratio;
-	Point cursor_pos;
-} Runner_State;
+	void*              handle;
+	Runner_Init_Func   runner_init;
+	Runner_Loop_Func   runner_loop;
+	Runner_Deinit_Func runner_deinit;
+} Runner_Actions;
 
-extern Runner_State* runner_init(Size viewport, float aspect_ratio);
-extern Bool          runner_loop(Runner_State* state); /* float delta_time */
-extern void          runner_deinit(Runner_State* state);
+extern Error runner_load(Runner_Actions* actions);
+extern Error runner_unload(Runner_Actions* actions);
 
 
 /* Utils */
 /* ------------------------------------------------------------ */
 
 extern Error glLogErrors(char* file, int line);
+
+
+/* Pedantic Workarounds */
+/* ------------------------------------------------------------ */
+
+extern Runner_Init_Func   pw_vp_to_fp_runner_init(void* func);
+extern Runner_Loop_Func   pw_vp_to_fp_runner_loop(void* func);
+extern Runner_Deinit_Func pw_vp_to_fp_runner_deinit(void* func);
 
 
 #endif /* PHOTON_H */

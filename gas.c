@@ -1,5 +1,5 @@
-#define RUNNER_INTERNAL
-#include <photon.h>
+#include <photon-runner.h>
+
 
 #include <string.h>
 /* void *memset(void s[.n], int c, size_t n); */
@@ -21,13 +21,6 @@ static void draw_gay_circle(float x, float y, n8 steps, float aspect_ratio, floa
 	glEnd();
 	GL_LOG_ERRORS();
 }
-
-/*
-typedef struct {
-	Size viewport;
-	float aspect_ratio;
-} Runner_State;
-*/
 
 Runner_State* runner_init(Size viewport, float aspect_ratio)
 {

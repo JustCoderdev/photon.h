@@ -1,5 +1,19 @@
 #include <photon.h>
 
+#include<dlfcn.h>
+/* 
+void *dlopen(const char *filename, int flags);
+int dlclose(void *handle);
+void *dlsym(void *restrict handle, const char *restrict symbol);
+char *dlerror(void);
+*/
+
+#include <string.h>
+/*
+void *memset(void s[.n], int c, size_t n);
+*/
+
+
 /* Geometry */
 /* ------------------------------------------------------------ */
 
@@ -116,6 +130,64 @@ void inputs_get_cursor(Point* cursor_pos)
 	printf("IO:CURSOR: %0.3fx%0.3f (raw %.0fx%.0f)\n", rx, ry, cx, cy);
 	cursor_pos->x = rx;
 	cursor_pos->y = ry;
+}
+
+
+/* Runner */
+/* ------------------------------------------------------------ */
+
+extern Error runner_load(Runner_Actions* actions)
+{
+	assert(memset(actions, 0, sizeof(Runner_Actions)) == actions);
+
+	actions->handle = dlopen(RUNNER_DL_NAME, RTLD_NOW);
+	if(actions->handle == NULL)
+	{
+		printf("ERROR:%s:%d: (RUNNER) Could not load the dynamic library '" RUNNER_DL_NAME "': %s\n",
+				__FILE__, __LINE__, dlerror());
+		return failure;
+	}
+
+	actions->runner_init = pw_vp_to_fp_runner_init(dlsym(actions->handle, "runner_init"));
+	if(actions->runner_init == NULL)
+	{
+		printf("ERROR:%s:%d: (RUNNER) Could not load the symbol 'runner_init': %s \n",
+				__FILE__, __LINE__, dlerror());
+		return failure;
+	}
+
+	actions->runner_loop = pw_vp_to_fp_runner_loop(dlsym(actions->handle, "runner_loop"));
+	if(actions->runner_loop == NULL)
+	{
+		printf("ERROR:%s:%d: (RUNNER) Could not load the symbol 'runner_loop': %s \n",
+				__FILE__, __LINE__, dlerror());
+		return failure;
+	}
+
+	actions->runner_deinit = pw_vp_to_fp_runner_deinit(dlsym(actions->handle, "runner_deinit"));
+	if(actions->runner_deinit == NULL)
+	{
+		printf("ERROR:%s:%d: (RUNNER) Could not load the symbol 'runner_deinit': %s \n",
+				__FILE__, __LINE__, dlerror());
+		return failure;
+	}
+
+	return success;
+}
+
+extern Error runner_unload(Runner_Actions* actions)
+{
+	if(dlclose(actions->handle) == 0)
+	{
+		assert(memset(actions, 0, sizeof(Runner_Actions)) == actions);
+		return success;
+	}
+	else
+	{
+		printf("ERROR:%s:%d: (RUNNER) Could not unload the dynamic library '"  RUNNER_DL_NAME "': %s \n",
+				__FILE__, __LINE__, dlerror());
+		return failure;
+	}
 }
 
 

@@ -1,6 +1,5 @@
 #include <photon.h>
 
-
 #define SCREEN_WIDTH 600
 #define SCREEN_HEIGHT 400
 
@@ -8,6 +7,7 @@ int main(void)
 {
 	Bool requested_stop = false;
 	Runner_State* runner_state = NULL;
+	Runner_Actions runner_actions = {0};
 
 	float aspect_ratio;
 	Size viewport = { SCREEN_WIDTH, SCREEN_HEIGHT };
@@ -24,13 +24,21 @@ int main(void)
 	glViewport(0, 0, viewport.width, viewport.height);
 	GL_LOG_ERRORS();
 
-	runner_state = runner_init(viewport, aspect_ratio);
-	if(!runner_state)
+
+	if(runner_load(&runner_actions))
+	{
+		display_free();
+		return failure;
+	}
+
+	runner_state = runner_actions.runner_init(viewport, aspect_ratio);
+	if(runner_state == NULL)
 	{
 		fprintf(stderr, "ERROR:%s:%d: (RUNNER) Could not init runner\n", __FILE__, __LINE__);
 		display_free();
 		return failure;
 	}
+
 	printf("Initiated runner with state saved in 0x%p\n", (void*)runner_state);
 
 
@@ -46,7 +54,7 @@ int main(void)
 		/* -------------------- */
 #endif
 
-		requested_stop = runner_loop(runner_state);
+		requested_stop = runner_actions.runner_loop(runner_state);
 
 #if 0
 		/* -------------------- */
@@ -56,6 +64,13 @@ int main(void)
 		inputs_poll();
 		inputs_get_cursor(&cursor_pos);
 #endif
+	}
+
+	runner_actions.runner_deinit(runner_state);
+	if(runner_unload(&runner_actions))
+	{
+		display_free();
+		return failure;
 	}
 
 	display_free();
