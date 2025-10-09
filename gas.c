@@ -4,23 +4,12 @@
 #include <string.h>
 /* void *memset(void s[.n], int c, size_t n); */
 
-static void draw_gay_circle(float x, float y, n8 steps, float aspect_ratio, float size)
-{
-	n8 i;
+void draw_gay_circle(float x, float y, n8 steps, float aspect_ratio, float size);
 
-	glBegin(GL_TRIANGLE_FAN);
-		glColor3f(0.0f, 1.0f, 0.0f);
-		glVertex3f(x, y, 0.0f);
-
-		for(i = 0; i < steps; ++i)
-		{
-			double deg = ((float)i / (float)steps) * 2 * PI;
-			glColor3f(RAD_TO_RAT(sin(deg)), 0.0f, RAD_TO_RAT(cos(deg)));
-			glVertex3f(x + (float)cos(deg) * size, y + (float)sin(deg) * size * aspect_ratio, 0.0f);
-		}
-	glEnd();
-	GL_LOG_ERRORS();
-}
+void demo_gay_ball_following_pointer(Point cursor_pos, float size, float aspect_ratio);
+void demo_point_over_cursor(Point cursor_pos);
+void demo_rainbow_triangle(void);
+void demo_inverse_circle_fill(n8 steps, float size, float aspect_ratio);
 
 Runner_State* runner_init(Window_State* window_state)
 {
@@ -31,7 +20,7 @@ Runner_State* runner_init(Window_State* window_state)
 
 	/* ---- REMOVE ME ----- */
 	/* float x, float y, int steps, float aspect_ratio, float size */
-	(void)draw_gay_circle(0, 0, 0, 0, 0);
+	/* (void)draw_gay_circle(0, 0, 0, 0, 0); */
 	/* ---- REMOVE ME ----- */
 
 	return state;
@@ -45,6 +34,7 @@ Bool runner_loop(Runner_State* state)
 	Point cursor_pos;
 	inputs_get_cursor(state->window_state, &state->cursor_pos);
 	cursor_pos = state->cursor_pos;
+	(void)cursor_pos;
 
 	/* -------------------- */
 
@@ -56,10 +46,12 @@ Bool runner_loop(Runner_State* state)
 
 	/* -------------------- */
 
+	/*
 #define P0  -0.5f, -0.5f * aspect_ratio
 #define P1F -0.5f,  0.5f * aspect_ratio
 #define P1M  0.5f, -0.5f * aspect_ratio
 #define P2   0.5f,  0.5f * aspect_ratio
+*/
 
 #if 0
 #define P0_C  0.37f, 0.37f, 0.37f
@@ -80,84 +72,15 @@ Bool runner_loop(Runner_State* state)
 	GL_LOG_ERRORS();
 #endif
 
-#if 1
-	/* Inverse circle fill */
-	{
-		n8 i;
-		n8 steps = 10;
-		float size = 1.0f;
-
-		float bx = -0.5f;
-		float by = -0.5f;
-
-		glBegin(GL_TRIANGLE_FAN);
-			glColor3f(0.194f, 0.094f, 0.094f);
-			glVertex2f(P2);
-
-			for(i = 0; i <= steps; ++i)
-			{
-				double deg = ((float)i / (float)steps) * PI / 2;
-				glVertex2f(
-					 bx + (float)cos(deg) * size,
-					(by + (float)sin(deg) * size) * aspect_ratio
-				);
-			}
-
-		glEnd();
-		GL_LOG_ERRORS();
-
-		glPointSize(10.0f);
-		GL_LOG_ERRORS();
-
-		glBegin(GL_POINTS);
-			glColor3f(1.0f, 0.0f, 0.0f); glVertex2f(P2);
-			glColor3f(0.0f, 1.0f, 0.0f);
-			for(i = 0; i <= steps; ++i)
-			{
-				double deg = ((float)i / (float)steps) * PI / 2;
-				glVertex2f(
-					 bx + (float)cos(deg) * size,
-					(by + (float)sin(deg) * size) * aspect_ratio
-				);
-			}
-		glEnd();
-		GL_LOG_ERRORS();
-	}
-#endif
+	demo_inverse_circle_fill(10, 1.0f, aspect_ratio);
 
 
-#if 0
-	/* Rainbow Triangle */
-	glBegin(GL_TRIANGLES);
-		glColor3f(1.0f, 0.0f, 0.0f); glVertex3f( 0.0f,  0.5f, 0.0f);
-		glColor3f(0.0f, 1.0f, 0.0f); glVertex3f(-0.5f, -0.5f, 0.0f);
-		glColor3f(0.0f, 0.0f, 1.0f); glVertex3f(+0.5f, -0.5f, 0.0f);
-	glEnd();
-	GL_LOG_ERRORS();
-#endif
 
-#if 1
-	/* Circle over Cursor */
-	glPointSize(10.0f);
-	GL_LOG_ERRORS();
-
-	glBegin(GL_POINTS);
-		glColor3f(1.0f, 0.0f, 0.0f);
-		glVertex3f(cursor_pos.x, cursor_pos.y, 0.0f);
-	glEnd();
-	GL_LOG_ERRORS();
-#endif
-
-#if 0
-	/* Gay ball following circle */
-	{
-		float size = 0.2f;
-		float x = CLAMP(-1 + size, cursor_pos.x, 1 - size),
-			  y = CLAMP(-1 + size * aspect_ratio, cursor_pos.y, 1 - size * aspect_ratio);
-
-		draw_gay_circle(x, y, 16, aspect_ratio, size);
-	}
-#endif
+	/*
+	demo_rainbow_triangle();
+	demo_point_over_cursor(cursor_pos);
+	demo_gay_ball_following_pointer(cursor_pos, 0.2f, aspect_ratio);
+	*/
 
 	/* -------------------- */
 
@@ -167,4 +90,99 @@ Bool runner_loop(Runner_State* state)
 void runner_deinit(Runner_State* state)
 {
 	(void)state;
+}
+
+
+/* Demos */
+/* ------------------------------------------------------------ */
+
+void demo_gay_ball_following_pointer(Point cursor_pos, float size, float aspect_ratio)
+{
+	float x = CLAMP(-1 + size, cursor_pos.x, 1 - size),
+		  y = CLAMP(-1 + size * aspect_ratio, cursor_pos.y, 1 - size * aspect_ratio);
+
+	draw_gay_circle(x, y, 16, aspect_ratio, size);
+}
+
+void demo_point_over_cursor(Point cursor_pos)
+{
+	glPointSize(10.0f);
+	GL_LOG_ERRORS();
+
+	glBegin(GL_POINTS);
+		glColor3f(1.0f, 0.0f, 0.0f);
+		glVertex3f(cursor_pos.x, cursor_pos.y, 0.0f);
+	glEnd();
+	GL_LOG_ERRORS();
+}
+
+void demo_rainbow_triangle(void)
+{
+	glBegin(GL_TRIANGLES);
+		glColor3f(1.0f, 0.0f, 0.0f); glVertex3f( 0.0f,  0.5f, 0.0f);
+		glColor3f(0.0f, 1.0f, 0.0f); glVertex3f(-0.5f, -0.5f, 0.0f);
+		glColor3f(0.0f, 0.0f, 1.0f); glVertex3f(+0.5f, -0.5f, 0.0f);
+	glEnd();
+	GL_LOG_ERRORS();
+}
+
+void demo_inverse_circle_fill(n8 steps, float size, float aspect_ratio)
+{
+	n8 i;
+	float bx = -0.5f;
+	float by = -0.5f;
+
+	glBegin(GL_TRIANGLE_FAN);
+		glColor3f(0.194f, 0.094f, 0.094f);
+		glVertex2f(0.5f,  0.5f * aspect_ratio);
+
+		for(i = 0; i <= steps; ++i)
+		{
+			double deg = ((float)i / (float)steps) * PI / 2;
+			glVertex2f(
+				 bx + (float)cos(deg) * size,
+				(by + (float)sin(deg) * size) * aspect_ratio
+			);
+		}
+
+	glEnd();
+	GL_LOG_ERRORS();
+
+	glPointSize(10.0f);
+	GL_LOG_ERRORS();
+
+	glBegin(GL_POINTS);
+		glColor3f(1.0f, 0.0f, 0.0f); glVertex2f(0.5f,  0.5f * aspect_ratio);
+		glColor3f(0.0f, 1.0f, 0.0f);
+		for(i = 0; i <= steps; ++i)
+		{
+			double deg = ((float)i / (float)steps) * PI / 2;
+			glVertex2f(
+				 bx + (float)cos(deg) * size,
+				(by + (float)sin(deg) * size) * aspect_ratio
+			);
+		}
+	glEnd();
+	GL_LOG_ERRORS();
+}
+
+/* "Utils" */
+/* ------------------------------------------------------------ */
+
+void draw_gay_circle(float x, float y, n8 steps, float aspect_ratio, float size)
+{
+	n8 i;
+
+	glBegin(GL_TRIANGLE_FAN);
+		glColor3f(0.0f, 1.0f, 0.0f);
+		glVertex3f(x, y, 0.0f);
+
+		for(i = 0; i <= steps; ++i)
+		{
+			double deg = ((float)i / (float)steps) * 2 * PI;
+			glColor3f(RAD_TO_RAT(sin(deg)), 0.0f, RAD_TO_RAT(cos(deg)));
+			glVertex3f(x + (float)cos(deg) * size, y + (float)sin(deg) * size * aspect_ratio, 0.0f);
+		}
+	glEnd();
+	GL_LOG_ERRORS();
 }
