@@ -1,7 +1,7 @@
 #include "../include/photon.h"
 
-#include<dlfcn.h>
-/* 
+#include <dlfcn.h>
+/*
 void *dlopen(const char *filename, int flags);
 int dlclose(void *handle);
 void *dlsym(void *restrict handle, const char *restrict symbol);
@@ -195,8 +195,9 @@ void inputs_get_cursor(Window_State* window_state, Point* cursor_pos)
 
 	if(rx == cursor_pos->x && ry == cursor_pos->y) return;
 
-	if(cx < 0 || cx > vw) return;
-	if(cy < 0 || cy > vh) return;
+#if DEBUG_IO_CURSOR_ENABLE
+	printf("IO:CURSOR: %0.3fx%0.3f (raw %.0fx%.0f)\n", rx, ry, cx, cy);
+#endif
 
 	cursor_pos->x = rx;
 	cursor_pos->y = ry;
@@ -256,8 +257,11 @@ extern Error runner_load(char* filename, Runner_Actions* actions)
 	return success;
 }
 
-extern Error runner_unload(Runner_Actions* actions)
+Error runner_unload(Runner_Actions* actions)
 {
+	if(actions == NULL) return success;
+	if(actions->handle == NULL) return success;
+
 	if(dlclose(actions->handle) == 0)
 	{
 		assert(memset(actions, 0, sizeof(Runner_Actions)) == actions);

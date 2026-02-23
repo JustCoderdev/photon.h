@@ -12,6 +12,7 @@ void demo_gay_ball_following_pointer(Point cursor_pos, float size, float aspect_
 void demo_point_over_cursor(Point cursor_pos);
 void demo_rainbow_triangle(void);
 void demo_inverse_circle_fill(n8 steps, float size, float aspect_ratio);
+void demo_g_square(float aspect_ratio);
 
 Runner_State* runner_init(Window_State* window_state)
 {
@@ -40,45 +41,29 @@ Bool runner_loop(Runner_State* state)
 
 	/* -------------------- */
 
-	glClearColor(0.094f, 0.094f, 0.094f, 1.0);
-	GL_LOG_ERRORS();
+	/* glClearColor(0.094f, 0.094f, 0.094f, 1.0); */
+	/* GL_LOG_ERRORS(); */
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	GL_LOG_ERRORS();
 
 	/* -------------------- */
 
-	/*
-#define P0  -0.5f, -0.5f * aspect_ratio
-#define P1F -0.5f,  0.5f * aspect_ratio
-#define P1M  0.5f, -0.5f * aspect_ratio
-#define P2   0.5f,  0.5f * aspect_ratio
-*/
-
-#if 0
-#define P0_C  0.37f, 0.37f, 0.37f
-#define P1F_C 0.75f, 0.47f, 0.63f
-#define P1M_C 0.42f, 0.50f, 0.82f
-#define P2_C  1.00f, 0.96f, 0.59f
-
-	/* Square */
-	glBegin(GL_TRIANGLES);
-		glColor3f(P0_C);  glVertex2f(P0);
-		glColor3f(P1F_C); glVertex2f(P1F);
-		glColor3f(P2_C);  glVertex2f(P2);
-
-		glColor3f(P0_C);  glVertex2f(P0);
-		glColor3f(P1M_C); glVertex2f(P1M);
-		glColor3f(P2_C);  glVertex2f(P2);
+	glBegin(GL_TRIANGLE_FAN);
+		glColor3f(1.0f, 0.0f, 0.0f);
+		glVertex2f(-1.0f, -1.0f);
+		glVertex2f(-1.0f,  1.0f);
+		glVertex2f( 1.0f,  1.0f);
 	glEnd();
 	GL_LOG_ERRORS();
-#endif
-	demo_gay_ball_following_pointer(cursor_pos, 0.2f, aspect_ratio);
+
+
 
 
 	/*
-	demo_inverse_circle_fill(10, 1.0f, aspect_ratio);
+	demo_g_square(aspect_ratio);
 	demo_rainbow_triangle();
+	demo_inverse_circle_fill(10, 1.0f, aspect_ratio);
 	demo_point_over_cursor(cursor_pos);
 	*/
 
@@ -89,7 +74,7 @@ Bool runner_loop(Runner_State* state)
 
 void runner_deinit(Runner_State* state)
 {
-	(void)state;
+	if(state != NULL) (void)free(state);
 }
 
 
@@ -153,10 +138,13 @@ void demo_inverse_circle_fill(n8 steps, float size, float aspect_ratio)
 
 	glBegin(GL_POINTS);
 		glColor3f(1.0f, 0.0f, 0.0f); glVertex2f(0.5f,  0.5f * aspect_ratio);
-		glColor3f(0.0f, 1.0f, 0.0f);
+
 		for(i = 0; i <= steps; ++i)
 		{
-			double deg = ((float)i / (float)steps) * PI / 2;
+			float ratio = (float)i / (float)steps;
+			double deg = ratio * PI / 2;
+
+			glColor3f(0.0f, 0.2f + ratio * 0.8f, 0.0f);
 			glVertex2f(
 				 bx + (float)cos(deg) * size,
 				(by + (float)sin(deg) * size) * aspect_ratio
@@ -165,6 +153,31 @@ void demo_inverse_circle_fill(n8 steps, float size, float aspect_ratio)
 	glEnd();
 	GL_LOG_ERRORS();
 }
+
+void demo_g_square(float aspect_ratio)
+{
+#define P0  -0.5f, -0.5f * aspect_ratio
+#define P1F -0.5f,  0.5f * aspect_ratio
+#define P1M  0.5f, -0.5f * aspect_ratio
+#define P2   0.5f,  0.5f * aspect_ratio
+
+#define P0_C  0.37f, 0.37f, 0.37f
+#define P1F_C 0.75f, 0.47f, 0.63f
+#define P1M_C 0.42f, 0.50f, 0.82f
+#define P2_C  1.00f, 0.96f, 0.59f
+
+	glBegin(GL_TRIANGLES);
+		glColor3f(P0_C);  glVertex2f(P0);
+		glColor3f(P1F_C); glVertex2f(P1F);
+		glColor3f(P2_C);  glVertex2f(P2);
+
+		glColor3f(P0_C);  glVertex2f(P0);
+		glColor3f(P1M_C); glVertex2f(P1M);
+		glColor3f(P2_C);  glVertex2f(P2);
+	glEnd();
+	GL_LOG_ERRORS();
+}
+
 
 /* "Utils" */
 /* ------------------------------------------------------------ */

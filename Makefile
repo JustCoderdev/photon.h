@@ -14,7 +14,7 @@ CCFLAGS = -std=c89 -ansi -pedantic-errors -pedantic \
 IFLAGS = -I./ -I./lib/include
 LDFLAGS = -L./ -L./bin -lGL -lglfw -lm -Wl,-rpath=./bin
 
-DFLAGS = -DDEBUG_ENABLE=1
+DFLAGS = -DDEBUG_ENABLE=1 -DDEBUG_IO_CURSOR_ENABLE=0
 FLAGS = $(CCFLAGS) $(IFLAGS) $(LDFLAGS) $(DFLAGS)
 
 .PHONY: all
