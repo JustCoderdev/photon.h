@@ -12,7 +12,7 @@
 		allpkgs = forAllSystems (system: import nixpkgs { inherit system; });
 
 		runPkgs = pkgs: with pkgs; [ libGL libGL.dev libglvnd libglvnd.dev mesa.drivers glfw ];
-		buildPkgs = pkgs: with pkgs; [ gcc gnumake ];
+		buildPkgs = pkgs: with pkgs; [ gcc gnumake pkg-config ];
 	in
 	{
 		# nix build .#<name>

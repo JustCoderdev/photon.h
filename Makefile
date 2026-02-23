@@ -21,7 +21,7 @@ FLAGS = $(CCFLAGS) $(IFLAGS) $(LDFLAGS) $(DFLAGS)
 .PHONY: bin
 .PHONY: clean
 
-all: bin/engine bin/gas.so
+all: bin/engine bin/rendering.so bin/test.so
 
 
 #####
@@ -39,9 +39,13 @@ bin/obj/engine.o: bin engine.c
 	@echo "Compiling... (engine.o)"
 	$(CC) $(FLAGS) engine.c -o $@ -c
 
-bin/obj/gas.o: bin gas.c
-	@echo "Compiling... (gas.o)"
-	$(CC) $(FLAGS) gas.c -o $@ -c
+bin/obj/rendering.o: bin examples/rendering.c
+	@echo "Compiling... (rendering.o)"
+	$(CC) $(FLAGS) examples/rendering.c -o $@ -c
+
+bin/obj/test.o: bin examples/test.c
+	@echo "Compiling... (test.o)"
+	$(CC) $(FLAGS) examples/test.c -o $@ -c
 
 
 #####
@@ -49,12 +53,15 @@ bin/obj/gas.o: bin gas.c
 bin/engine: bin bin/obj/engine.o $(PHOTON_FILES)
 	@echo "Compiling... (engine)"
 	$(CC) $(FLAGS) bin/obj/engine.o $(PHOTON_FILES) -o $@
-	# -l:gas.so
+	# -l:rendering.so
 
-bin/gas.so: bin bin/obj/gas.o $(PHOTON_FILES)
-	@echo "Compiling... (gas)"
-	$(CC) $(FLAGS) -fPIC -shared bin/obj/gas.o $(PHOTON_FILES) -o $@
+bin/rendering.so: bin bin/obj/rendering.o $(PHOTON_FILES)
+	@echo "Compiling... (rendering)"
+	$(CC) $(FLAGS) -fPIC -shared bin/obj/rendering.o $(PHOTON_FILES) -o $@
 
+bin/test.so: bin bin/obj/test.o $(PHOTON_FILES)
+	@echo "Compiling... (test)"
+	$(CC) $(FLAGS) -fPIC -shared bin/obj/test.o $(PHOTON_FILES) -o $@
 
 #####
 

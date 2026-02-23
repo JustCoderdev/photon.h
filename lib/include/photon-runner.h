@@ -1,14 +1,14 @@
 #ifndef PHOTON_RUNNER_H
 #define PHOTON_RUNNER_H
 
-#include <photon-common.h>
+#include "photon-common.h"
 
 typedef struct {
 	Window_State* window_state;
 	Point cursor_pos;
 } Runner_State;
 
-#include <photon.h>
+#include "photon.h"
 
 
 extern Runner_State* runner_init(Window_State* window_state);

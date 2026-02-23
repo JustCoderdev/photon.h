@@ -1,5 +1,7 @@
-#include <photon-runner.h>
+#include "../lib/include/photon-runner.h"
 
+#include <math.h>
+#include <stdlib.h>
 
 #include <string.h>
 /* void *memset(void s[.n], int c, size_t n); */
@@ -28,7 +30,7 @@ Runner_State* runner_init(Window_State* window_state)
 
 Bool runner_loop(Runner_State* state)
 {
-	Size viewport = state->window_state->viewport;
+	/* Size viewport = state->window_state->viewport; */
 	float aspect_ratio = (float)state->window_state->viewport.width / (float)state->window_state->viewport.height;
 
 	Point cursor_pos;
@@ -71,15 +73,13 @@ Bool runner_loop(Runner_State* state)
 	glEnd();
 	GL_LOG_ERRORS();
 #endif
-
-	demo_inverse_circle_fill(10, 1.0f, aspect_ratio);
-
+	demo_gay_ball_following_pointer(cursor_pos, 0.2f, aspect_ratio);
 
 
 	/*
+	demo_inverse_circle_fill(10, 1.0f, aspect_ratio);
 	demo_rainbow_triangle();
 	demo_point_over_cursor(cursor_pos);
-	demo_gay_ball_following_pointer(cursor_pos, 0.2f, aspect_ratio);
 	*/
 
 	/* -------------------- */

@@ -1,13 +1,7 @@
 #ifndef PHOTON_H
 #define PHOTON_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <math.h>
-
-
-#include <photon-common.h>
+#include "photon-common.h"
 
 
 /* Geometry */
@@ -31,12 +25,11 @@ extern void  display_free(void);
 
 extern void inputs_poll(Window_State* state);
 extern void inputs_get_cursor(Window_State* state, Point* cursor_pos);
+extern void inputs_get_keys(Window_State* state, PhysicalPressedKeyField* keys);
 
 
 /* Runner API */
 /* ------------------------------------------------------------ */
-
-#define RUNNER_DL_NAME "gas.so"
 
 #ifndef PHOTON_RUNNER_H
 typedef void Runner_State;
@@ -53,7 +46,7 @@ typedef struct {
 	Runner_Deinit_Func runner_deinit;
 } Runner_Actions;
 
-extern Error runner_load(Runner_Actions* actions);
+extern Error runner_load(char* filename, Runner_Actions* actions);
 extern Error runner_unload(Runner_Actions* actions);
 
 
