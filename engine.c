@@ -2,17 +2,18 @@
 
 #include <stdio.h>
 
+#include <assert.h>
 #include <time.h>
 /*
 char *ctime(const time_t *restrict timep);
 time_t time(time_t *_Nullable tloc);
 */
 
-static Runner_State* runner_load_and_init(Window_State* window_state_ptr, Runner_Actions* runner_actions_ptr)
+static Runner_State* runner_load_and_init(char* filename, Window_State* window_state_ptr, Runner_Actions* runner_actions_ptr)
 {
 	Runner_State* runner_state_ptr = NULL;
 
-	if(runner_load(runner_actions_ptr)) return NULL;
+	if(runner_load(filename, runner_actions_ptr)) return NULL;
 
 	assert(runner_actions_ptr->runner_init != NULL);
 	runner_state_ptr = runner_actions_ptr->runner_init(window_state_ptr);
@@ -41,7 +42,6 @@ static Error runner_deinit_and_unload(Runner_State* runner_state_ptr, Runner_Act
 
 	printf("RUNNER:0x%p: Uninitialised and unloaded runner\n", dlhandle_ptr);
 	return success;
-
 }
 
 
@@ -110,7 +110,7 @@ int main(int argc, char** argv)
 			if(runner_deinit_and_unload(runner_state_ptr, &runner_actions))
 				goto failure_cleanup_display;
 
-			runner_state_ptr = runner_load_and_init(&window_state, &runner_actions);
+			runner_state_ptr = runner_load_and_init(so_filename, &window_state, &runner_actions);
 			if(runner_state_ptr == NULL) goto failure_cleanup_runner;
 
 			window_state.runner_should_reload = false;

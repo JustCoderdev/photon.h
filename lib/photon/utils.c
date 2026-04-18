@@ -168,8 +168,10 @@ extern void inputs_poll(Window_State* state)
 	glfwPollEvents();
 
 	/* Check if should close window */
-	if(glfwGetKey(state->window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-	{
+	if(
+		glfwGetKey(state->window, GLFW_KEY_ESCAPE) == GLFW_PRESS
+		|| glfwGetKey(state->window, GLFW_KEY_Q) == GLFW_PRESS
+	) {
 		glfwSetWindowShouldClose(state->window, true);
 		state->display_is_alive = false;
 	}

@@ -1,6 +1,5 @@
 #include "../lib/include/photon-runner.h"
 
-#include <math.h>
 #include <stdlib.h>
 
 #include <string.h>
@@ -22,7 +21,7 @@ const SizeF square_size = { 1.0f,  1.0f };
 Bool runner_loop(Runner_State* state)
 {
 	/* Size viewport = state->window_state->viewport; */
-	float aspect_ratio = (float)state->window_state->viewport.width / (float)state->window_state->viewport.height;
+	/* float aspect_ratio = (float)state->window_state->viewport.width / (float)state->window_state->viewport.height; */
 
 	Point cursor_pos;
 	inputs_get_cursor(state->window_state, &state->cursor_pos);
@@ -53,20 +52,8 @@ Bool runner_loop(Runner_State* state)
 
 	glBegin(GL_POINTS);
 		glColor3f(1.0, 0.0, 0.0); glVertex3f(square_pos.x,                      square_pos.y,                     0.0f);
-	glEnd();
-	GL_LOG_ERRORS();
-
-	glBegin(GL_POINTS);
 		glColor3f(0.0, 1.0, 0.0); glVertex3f(square_pos.x + square_size.height, square_pos.y,                     0.0f);
-	glEnd();
-	GL_LOG_ERRORS();
-
-	glBegin(GL_POINTS);
 		glColor3f(0.0, 0.0, 1.0); glVertex3f(square_pos.x,                      square_pos.y + square_size.width, 0.0f);
-	glEnd();
-	GL_LOG_ERRORS();
-
-	glBegin(GL_POINTS);
 		glColor3f(0.5, 0.5, 0.5); glVertex3f(square_pos.x + square_size.height, square_pos.y + square_size.width, 0.0f);
 	glEnd();
 	GL_LOG_ERRORS();
