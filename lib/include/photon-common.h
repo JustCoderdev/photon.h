@@ -41,6 +41,9 @@ typedef int Errno;
 typedef float Ratio;
 typedef float Radian;
 
+typedef struct {
+	unsigned int x, y;
+} Corner;
 
 typedef struct {
 	float x, y;
@@ -137,7 +140,6 @@ typedef struct {
 #else
 #define GL_LOG_ERRORS()
 #endif
-
 
 #endif /* PHOTON_COMMON_H */
 

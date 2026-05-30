@@ -47,6 +47,10 @@ bin/obj/test.o: bin examples/test.c
 	@echo "Compiling... (test.o)"
 	$(CC) $(FLAGS) examples/test.c -o $@ -c
 
+bin/obj/calculator.o: bin examples/calculator.c
+	@echo "Compiling... (calculator.o)"
+	$(CC) $(FLAGS) examples/calculator.c -o $@ -c
+
 
 #####
 
@@ -62,6 +66,10 @@ bin/rendering.so: bin bin/obj/rendering.o $(PHOTON_FILES)
 bin/test.so: bin bin/obj/test.o $(PHOTON_FILES)
 	@echo "Compiling... (test)"
 	$(CC) $(FLAGS) -fPIC -shared bin/obj/test.o $(PHOTON_FILES) -o $@
+
+bin/calculator.so: bin bin/obj/calculator.o $(PHOTON_FILES)
+	@echo "Compiling... (calculator)"
+	$(CC) $(FLAGS) -fPIC -shared bin/obj/calculator.o $(PHOTON_FILES) -o $@
 
 #####
 

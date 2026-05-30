@@ -54,6 +54,7 @@ extern Error runner_unload(Runner_Actions* actions);
 /* ------------------------------------------------------------ */
 
 extern Error glLogErrors(char* file, int line);
+extern Point corner_to_point(Window_State* window_state, Corner corner);
 
 
 /* Pedantic Workarounds */

@@ -42,6 +42,7 @@ void draw_circle_flat(Point pos, float size, Ratio aspect_ratio, n8 steps, Color
 /* Display */
 /* ------------------------------------------------------------ */
 
+#if 0
 static PhysicalPressedKeyField pressed_keys = {0};
 static void glfw_character_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -60,7 +61,11 @@ static void glfw_character_callback(GLFWwindow* window, int key, int scancode, i
 		default: assert(0 && "UNREACHABLE");
 	}
 	printf(" %c (raw %d), mods %d\n", key, key, mods);
+#else
+	(void)mods;
 #endif
+
+	if(action != GLFW_RELEASE) return;
 
 	switch(key)
 	{
@@ -116,6 +121,7 @@ static void glfw_character_callback(GLFWwindow* window, int key, int scancode, i
 		case GLFW_KEY_GRAVE_ACCENT  : pressed_keys.smb_btk = 1; /* ` */ break;
 	}
 }
+#endif
 
 Error display_init(Window_State* state, n16 viewport_width, n16 viewport_height)
 {
@@ -138,7 +144,8 @@ Error display_init(Window_State* state, n16 viewport_width, n16 viewport_height)
 	glfwGetFramebufferSize(state->window, &state->viewport.width, &state->viewport.height);
 	state->display_is_alive = true;
 
-	glfwSetKeyCallback(state->window, glfw_character_callback);
+	/* need to find a way to move key pressed to so */
+	/* glfwSetKeyCallback(state->window, glfw_character_callback); */
 
 	return success;
 }
@@ -209,11 +216,13 @@ void inputs_get_cursor(Window_State* window_state, Point* cursor_pos)
 #endif
 }
 
+#if 0
 void inputs_get_keys(Window_State* state, PhysicalPressedKeyField* keys)
 {
 	(void)state;
 	*keys = pressed_keys;
 }
+#endif
 
 
 
@@ -306,3 +315,10 @@ Error glLogErrors(char* file, int line)
 	return failure;
 }
 
+Point corner_to_point(Window_State* window_state, Corner corner)
+{
+	Point point = {0};
+	point.x = RAT_TO_RAD((float)corner.x / (float)window_state->viewport.width),
+	point.y = -RAT_TO_RAD((float)corner.y / (float)window_state->viewport.height);
+	return point;
+}
