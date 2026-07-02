@@ -1,8 +1,11 @@
 #include "../lib/include/photon-runner.h"
+#include "GL/gl.h"
 
-#include <math.h>
+#define CAT_TEXTURE_FILENAME "cat.bmp"
+
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 #include <string.h>
 /* void *memset(void s[.n], int c, size_t n); */
@@ -15,6 +18,24 @@ Runner_State* runner_init(Window_State* window_state)
 	(void)memset(state, 0, sizeof(*state));
 
 	state->window_state = window_state;
+	state->cat_image = image_bmp_load(CAT_TEXTURE_FILENAME);
+	assert(state->cat_image.texel != NULL);
+
+	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, &state->cat_texture_id);
+	glBindTexture(GL_TEXTURE_2D, state->cat_texture_id);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,
+			state->cat_image.size.width,
+			state->cat_image.size.height,
+			0, GL_BGR, GL_UNSIGNED_BYTE,
+			state->cat_image.texel);
+
 	return state;
 }
 
@@ -26,7 +47,7 @@ Bool runner_loop(Runner_State* state)
 	Point cursor_pos;
 	inputs_get_cursor(state->window_state, &state->cursor_pos);
 	cursor_pos = state->cursor_pos;
-	(void)cursor_pos;
+	(void)cursor_pos, (void)aspect_ratio;
 
 	/* -------------------- */
 
@@ -38,8 +59,36 @@ Bool runner_loop(Runner_State* state)
 
 	/* -------------------- */
 
+	/* CAT */
+	/* ---------------------------------------- */
 	{
-		/* static Bool logged = false; */
+		Point tl_pnt, br_pnt;
+		/* ColorRGB color = { 0.0f, 1.0f, 0.0f }; */
+
+		Size size = { 200, 300 };
+
+		Corner corner_tl = { 10, 10 };
+		Corner offset = corner_tl;
+
+		offset.x += (unsigned int)size.width;
+		offset.y += (unsigned int)size.height;
+
+		tl_pnt = corner_to_point(state->window_state, corner_tl);
+		br_pnt = corner_to_point(state->window_state, offset);
+
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(tl_pnt.x, br_pnt.y, 0.0f);
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(tl_pnt.x, tl_pnt.y, 0.0f);
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(br_pnt.x, tl_pnt.y, 0.0f);
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(br_pnt.x, br_pnt.y, 0.0f);
+		glEnd();
+		GL_LOG_ERRORS();
+	}
+
+#if 0
+	/* "BUTTONS" */
+	/* ---------------------------------------- */
+	{
 		ColorRGB red = { 1.0f, 0.0f, 0.0f };
 		ColorRGB grn = { 0.0f, 1.0f, 0.0f };
 		ColorRGB ble = { 0.0f, 0.0f, 1.0f };
@@ -56,6 +105,11 @@ Bool runner_loop(Runner_State* state)
 		component_button(state, B, size, grn);
 		component_button(state, C, size, ble);
 	}
+#endif
+
+#if 0
+	/* CURSOR LINES */
+	/* ---------------------------------------- */
 
 	glBegin(GL_LINES);
 		glColor3f(1.0f, 0.0f, 0.0f); glVertex3f(-1.0, cursor_pos.y, 0.0f);
@@ -81,6 +135,7 @@ Bool runner_loop(Runner_State* state)
 		glColor3f(0.0f, 1.0f, 0.0f); glVertex3f(1.0, 1.0, 0.0f);
 	glEnd();
 	GL_LOG_ERRORS();
+#endif
 
 	/* -------------------- */
 
@@ -89,7 +144,8 @@ Bool runner_loop(Runner_State* state)
 
 void runner_deinit(Runner_State* state)
 {
-	(void)state;
+	glDeleteTextures(1, &state->cat_texture_id);
+	image_unload(&state->cat_image);
 }
 
 

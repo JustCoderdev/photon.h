@@ -6,6 +6,9 @@
 typedef struct {
 	Window_State* window_state;
 	Point cursor_pos;
+
+	GLuint cat_texture_id;
+	ImageRGB cat_image;
 } Runner_State;
 
 #include "photon.h"

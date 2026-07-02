@@ -50,7 +50,7 @@ typedef struct {
 } Point;
 
 typedef struct {
-	int width, height;
+	i32 width, height;
 } Size;
 
 typedef struct {
@@ -61,6 +61,22 @@ typedef struct {
 	float r, g, b;
 } ColorRGB;
 
+typedef struct {
+	n8 r, g, b;
+} ColorRGBn;
+
+typedef struct {
+	n8 b, g, r;
+} ColorBGRn;
+
+typedef struct {
+	float r, g, b, a;
+} ColorRGBA;
+
+typedef struct {
+	Size size;
+	ColorRGBn* texel;
+} ImageRGB;
 
 typedef struct {
 	GLFWwindow *window;

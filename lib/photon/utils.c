@@ -322,3 +322,89 @@ Point corner_to_point(Window_State* window_state, Corner corner)
 	point.y = -RAT_TO_RAD((float)corner.y / (float)window_state->viewport.height);
 	return point;
 }
+
+typedef struct
+{
+	char magic[2];
+	i8   size[4];
+
+	char _1[4];
+	i8   offset[4];
+
+	char _2[4];
+
+	i8 width[4];
+	i8 height[4];
+
+	i8 planes[2];
+	i8 bits_per_pixel[2];
+} BMP_Header;
+
+ImageRGB image_bmp_load(char* filename)
+{
+	BMP_Header header = { 0 };
+	ImageRGB image = { 0 };
+	i32 i, filesize, offset;
+	i16 bits;
+
+	FILE* file = fopen(filename, "r");
+	assert(file != NULL);
+
+	printf("Loading bmp image '%s'\n", filename);
+
+	assert(fread(&header, sizeof(header), 1, file) == 1);
+	filesize          = le_pack_array_into_i32(header.size);
+	offset            = le_pack_array_into_i32(header.offset);
+	image.size.width  = le_pack_array_into_i32(header.width);
+	image.size.height = le_pack_array_into_i32(header.height);
+	bits              = le_pack_array_into_i16(header.bits_per_pixel);
+	assert(bits == 24); /* BGR */
+
+	printf("Header (%lu)\n", sizeof(BMP_Header));
+	printf("   magic: %.2s\n", header.magic);
+	printf("    size: %d (%x)\n", filesize, filesize);
+	printf("  offset: %d (%x)\n", offset, offset);
+	printf("   width: %d (%x)\n", image.size.width,  image.size.width);
+	printf("  height: %d (%x)\n", image.size.height, image.size.height);
+	printf("     bpp: %d (%x)\n", bits, bits);
+
+	image.texel = malloc((n32)image.size.width * (n32)image.size.height * sizeof(*image.texel));
+	assert(image.texel);
+
+	(void)fseek(file, offset, SEEK_SET);
+	for(i = 0; i < image.size.width * image.size.height; ++i)
+	{
+		assert(fread(&image.texel[i], sizeof(image.texel[i]), 1, file) == 1);
+	}
+
+	(void)fclose(file);
+	return image;
+}
+
+void image_unload(ImageRGB* image)
+{
+	image->size.width = 0;
+	image->size.height = 0;
+	free(image->texel);
+	image->texel = NULL;
+}
+
+i16 le_pack_array_into_i16(i8 array[2])
+{
+	i16 numb = array[1] & 0xff;
+	numb <<= 8;
+	numb |= array[0] & 0xff;
+	return numb;
+}
+
+i32 le_pack_array_into_i32(i8 array[4])
+{
+	i32 numb = array[3] & 0xff;
+	numb <<= 8;
+	numb |= array[2] & 0xff;
+	numb <<= 8;
+	numb |= array[1] & 0xff;
+	numb <<= 8;
+	numb |= array[0] & 0xff;
+	return numb;
+}

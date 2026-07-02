@@ -67,9 +67,14 @@ bin/test.so: bin bin/obj/test.o $(PHOTON_FILES)
 	@echo "Compiling... (test)"
 	$(CC) $(FLAGS) -fPIC -shared bin/obj/test.o $(PHOTON_FILES) -o $@
 
-bin/calculator.so: bin bin/obj/calculator.o $(PHOTON_FILES)
+bin/calculator.so: bin bin/obj/calculator.o $(PHOTON_FILES) bin/cat.bmp
 	@echo "Compiling... (calculator)"
 	$(CC) $(FLAGS) -fPIC -shared bin/obj/calculator.o $(PHOTON_FILES) -o $@
+
+#####
+
+bin/cat.bmp: bin
+	cp cat.bmp bin/cat.bmp
 
 #####
 

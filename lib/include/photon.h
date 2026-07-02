@@ -56,6 +56,12 @@ extern Error runner_unload(Runner_Actions* actions);
 extern Error glLogErrors(char* file, int line);
 extern Point corner_to_point(Window_State* window_state, Corner corner);
 
+extern ImageRGB image_bmp_load(char* filename);
+extern void image_unload(ImageRGB *image);
+
+extern i16 le_pack_array_into_i16(i8 array[2]);
+extern i32 le_pack_array_into_i32(i8 array[4]);
+
 
 /* Pedantic Workarounds */
 /* ------------------------------------------------------------ */
